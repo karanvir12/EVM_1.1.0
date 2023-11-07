@@ -1,0 +1,70 @@
+[package]
+name = "fc-db"
+version = "2.0.0-dev"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Frontier database backend"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+async-trait = "0.1"
+
+ethereum = { version = "0.14.0", features = ["with-codec"], optional = true }
+futures = { version = "0.3.28", optional = true }
+kvdb-rocksdb = { version ="0.19.0", optional = true }
+log = { version = "0.4.20", default-features = false }
+parity-db = "0.4.10"
+
+parking_lot = "0.12.1"
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+
+smallvec = { version = "1.11", optional = true }
+sqlx = {  version = "0.7.1", features = ["runtime-tokio-native-tls", "sqlite"], optional = true }
+tokio = { version = "1.32.0", features = ["macros", "sync"], optional = true }
+# Substrate
+sc-client-api = {path = "../../../substrate/client/api",optional = true}
+sc-client-db = { path = "../../../substrate/client/db", default-features = false }
+sp-api = { path = "../../../substrate/primitives/api", optional = true}
+sp-blockchain = { path = "../../../substrate/primitives/blockchain" }
+sp-core = { path = "../../../substrate/primitives/core" }
+sp-database = {path = "../../../substrate/primitives/database" }
+sp-runtime = { path = "../../../substrate/primitives/runtime" }
+
+sp-storage = { path = "../../../substrate/primitives/storage",optional =true}
+# Frontier
+fc-api = { path = "../api"}
+fc-storage = { version= "1.0.0-dev" , path= "../storage", optional=true }
+fp-consensus = {  version = "2.0.0-dev", path = "../../evm-primitives/consensus", features = ["default"], optional = true }
+fp-rpc = { path = "../../evm-primitives/rpc", features = ["default"], optional = true }
+fp-storage = { version = "2.0.0", path = "../../evm-primitives/storage" }
+
+[dev-dependencies]
+futures = "0.3.28"
+
+maplit = "1.0.2"
+tempfile = "3.8.0"
+# Substrate
+sc-block-builder = { path = "../../../substrate/client/block-builder" }
+sp-consensus = { path = "../../../substrate/primitives/consensus/common" }
+substrate-test-runtime-client = { path = "../../../substrate/test-utils/runtime/client" }
+
+[features]
+default = ["rocksdb"]
+rocksdb = [
+	"kvdb-rocksdb",
+	"sc-client-db/rocksdb",
+	"smallvec",
+]
+sql = [
+	"ethereum",
+	"futures",
+	"sqlx",
+	"tokio",
+	"sc-client-api",
+	"sp-api",
+	"sp-storage",
+	"fc-storage",
+	"fp-consensus",
+	"fp-rpc",
+]

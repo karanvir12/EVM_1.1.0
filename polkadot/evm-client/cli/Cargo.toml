@@ -1,0 +1,48 @@
+[package]
+name = "fc-cli"
+version = "1.0.0-dev"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Frontier CLI interface"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+clap = { version = "4.4.3", features = ["derive", "deprecated"] }
+ethereum-types = { version = "0.14.1", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+serde_json = "1.0" 
+# Substrate
+sc-cli = { path = "../../../substrate/client/cli", default-features = false }
+sp-api = { path = "../../../substrate/primitives/api", default-features = false }
+sp-blockchain = {  path = "../../../substrate/primitives/blockchain",default-features = false }
+sp-runtime = {  path = "../../../substrate/primitives/runtime", default-features = false }
+
+# Frontier
+fc-db = { path = "../db" }
+fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc" }
+fp-storage = { version = "2.0.0", path = "../../evm-primitives/storage" }
+
+[dev-dependencies]
+futures = "0.3.28"
+
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+
+tempfile = "3.3.0"
+# Substrate
+sc-block-builder = { path = "../../../substrate/client/block-builder" }
+sc-client-db = { path = "../../../substrate/client/db" }
+sp-consensus = { path = "../../../substrate/primitives/consensus/common"}
+sp-io = { path = "../../../substrate/primitives/io" }
+substrate-test-runtime-client = {path = "../../../substrate/test-utils/runtime/client" }
+# Frontier
+fc-api = { path = "../api" }
+fc-db = { path = "../db" , features = ["rocksdb"] }
+polkadot-runtime = { version = "1.0.0-dev", path = "../../runtime/polkadot" }
+
+[features]
+default = ["rocksdb"]
+rocksdb = [
+	"sc-cli/rocksdb",
+	"fc-db/rocksdb",
+]

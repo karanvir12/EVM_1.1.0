@@ -1,0 +1,59 @@
+[package]
+name = "fc-mapping-sync"
+version = "2.0.0-dev"
+license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
+description = "Mapping sync logic for Frontier."
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+futures = "0.3.28"
+
+futures-timer = "3.0.2"
+log = { version = "0.4.20" }
+parking_lot = "0.12.1"
+tokio = { version = "1.32.0", features = ["macros", "sync"], optional = true }
+# Substrate
+sc-client-api = {  path = "../../../substrate/client/api" }
+sc-utils = {  path = "../../../substrate/client/utils" }
+sp-api = {  path = "../../../substrate/primitives/api", default-features = false }
+sp-blockchain = { path = "../../../substrate/primitives/blockchain" }
+sp-consensus = { path = "../../../substrate/primitives/consensus/common" ,features = ["default"]}
+sp-core = {  path = "../../../substrate/primitives/core", default-features = false,optional = true }
+sp-runtime = { path = "../../../substrate/primitives/runtime", default-features = false }
+
+# Frontier
+fc-db = { path = "../db"}
+fc-storage = { version= "1.0.0-dev" , path= "../storage" }
+fp-consensus = { version = "2.0.0-dev", path = "../../evm-primitives/consensus" }
+fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc" }
+
+[dev-dependencies]
+ethereum = {version = "0.14.0" }
+ethereum-types = { version = "0.14.1"}
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+
+sqlx = { version = "0.7.1", features = ["runtime-tokio-native-tls", "sqlite"] }
+tempfile = "3.8.0"
+tokio = { version = "1.32.0", features = ["sync"] }
+# Substrate
+sc-block-builder = {path = "../../../substrate/client/block-builder" }
+sc-client-db = {path = "../../../substrate/client/db", features = ["rocksdb"] }
+sp-consensus = { path = "../../../substrate/primitives/consensus/common" }
+sp-core = {path = "../../../substrate/primitives/core" }
+sp-io = { path = "../../../substrate/primitives/io", default-features = false }
+substrate-test-runtime-client = { path = "../../../substrate/test-utils/runtime/client" }
+# Frontier
+fp-consensus = { version = "2.0.0-dev", path = "../../evm-primitives/consensus" }
+fp-storage = { version = "2.0.0", path = "../../evm-primitives/storage" }
+polkadot-runtime = { version = "1.0.0-dev", path = "../../runtime/polkadot" }
+
+[features]
+default = ["rocksdb"]
+rocksdb = ["fc-db/rocksdb"]
+sql = [
+	"tokio",
+	"sp-core",
+	"fc-db/sql",
+]

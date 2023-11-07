@@ -1,0 +1,35 @@
+[package]
+name = "fp-ethereum"
+version = "1.0.0-dev"
+license = "Apache-2.0"
+description = "Primitive Ethereum types."
+
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[dependencies]
+ethereum = { version = "0.14.0", default-features = false, features = ["with-codec"] }
+ethereum-types = { version = "0.14.1", default-features = false }
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+
+# Substrate
+
+frame-support = { path = "../../../substrate/frame/support", default-features = false }
+
+sp-std = {  path = "../../../substrate/primitives/std", default-features = false }
+# Frontier
+fp-evm = { version = "3.0.0-dev", path = "../evm", default-features = false }
+
+[features]
+default = ["std"]
+std = [
+	"ethereum/std",
+	"ethereum-types/std",
+	"scale-codec/std",
+	# Substrate
+	"frame-support/std",
+	"sp-std/std",
+	# Frontier
+	"fp-evm/std",
+]
