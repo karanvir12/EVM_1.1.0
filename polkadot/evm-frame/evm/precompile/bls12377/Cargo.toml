@@ -1,6 +1,7 @@
 [package]
 name = "pallet-evm-precompile-bls12377"
 version = "1.0.0-dev"
+edition = "2021"
 
 
 [dependencies]

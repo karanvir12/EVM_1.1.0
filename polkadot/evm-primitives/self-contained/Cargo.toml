@@ -3,6 +3,7 @@ name = "fp-self-contained"
 version = "1.0.0-dev"
 license = "Apache-2.0"
 description = "Primitive Ethereum abstractions for Substrate."
+edition = "2021"
 
 
 [package.metadata.docs.rs]

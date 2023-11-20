@@ -3,6 +3,7 @@ name = "fc-api"
 version = "1.0.0-dev"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Frontier client interfaces"
+edition = "2021"
 
 
 [package.metadata.docs.rs]

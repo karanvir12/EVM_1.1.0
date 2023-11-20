@@ -3,6 +3,7 @@ name = "fc-consensus"
 version = "2.0.0-dev"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Frontier consensus for substrate."
+edition = "2021"
 
 
 [package.metadata.docs.rs]
@@ -13,15 +14,15 @@ targets = ["x86_64-unknown-linux-gnu"]
 async-trait = "0.1"
 thiserror = "1.0"
 # Substrate
-sc-consensus = { path = "../../../substrate/client/consensus/common" }
+sc-consensus = { path = "../../../substrate/client/consensus/common" , default-features = false}
 sp-api = {  path = "../../../substrate/primitives/api", default-features = false }
-sp-block-builder = {  path = "../../../substrate/primitives/block-builder", default-features = false }
-sp-consensus = { path = "../../../substrate/primitives/consensus/common" }
+sp-block-builder = {  path = "../../../substrate/primitives/block-builder", default-features = false, features = ["default"] }
+sp-consensus = { path = "../../../substrate/primitives/consensus/common" , default-features = false}
 sp-runtime = {  path = "../../../substrate/primitives/runtime", default-features = false }
 
 # Frontier
-fp-consensus = { version = "2.0.0-dev", path = "../../evm-primitives/consensus" }
+fp-consensus = { version = "2.0.0-dev", path = "../../evm-primitives/consensus", features = ["default"] }
 
 
-fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc" }
+fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc" , features = ["default"]}
 fc-db = { path = "../db" }

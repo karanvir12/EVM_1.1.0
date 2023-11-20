@@ -3,6 +3,7 @@ name = "pallet-evm-chain-id"
 version = "1.0.0-dev"
 license = "Apache-2.0"
 description = "EVM chain id storage pallet."
+edition = "2021"
 
 
 [package.metadata.docs.rs]

@@ -3,22 +3,24 @@ name = "pallet-evm-precompile-dispatch"
 version = "2.0.0-dev"
 license = "Apache-2.0"
 description = "DISPATCH precompiles for EVM pallet."
+edition = "2021"
 
 
 [dependencies]
-scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+#scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
 
 # Substrate
 
 frame-support = { path = "../../../../../substrate/frame/support", default-features = false }
 
-sp-runtime = {path = "../../../../../substrate/primitives/runtime", default-features = false }
+#sp-runtime = {path = "../../../../../substrate/primitives/runtime", default-features = false }
 
 # Frontier
 fp-evm = { version = "3.0.0-dev", path = "../../../../evm-primitives/evm", default-features = false }
 pallet-evm = { version = "6.0.0-dev", path = "../..", default-features = false }
 
 [dev-dependencies]
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
 
 scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
 
@@ -36,11 +38,13 @@ sp-std = {path = "../../../../../substrate/primitives/std", default-features = f
 [features]
 default = ["std"]
 std = [
-	"scale-codec/std",
+	#"scale-codec/std",
 	# Substrate
 	"frame-support/std",
-	"sp-runtime/std",
+	#"sp-runtime/std",
 	# Frontier
 	"fp-evm/std",
 	"pallet-evm/std",
+	#"pallet-balances/std",
+#	"pallet-utility/std"
 ]

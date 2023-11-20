@@ -8,8 +8,13 @@ license.workspace = true
 
 [dependencies]
 bitvec = { version = "1.0.0", default-features = false, features = ["alloc"] }
-parity-scale-codec = { version = "3.6.1", default-features = false, features = ["derive", "max-encoded-len"] }
-scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
+parity-scale-codec = { version = "3.6.1", default-features = false, features = [
+	"derive",
+	"max-encoded-len",
+] }
+scale-info = { version = "2.5.0", default-features = false, features = [
+	"derive",
+] }
 log = { version = "0.4.17", default-features = false }
 rustc-hex = { version = "2.1.0", default-features = false }
 serde = { version = "1.0.188", default-features = false }
@@ -82,7 +87,9 @@ pallet-whitelist = { path = "../../../substrate/frame/whitelist", default-featur
 pallet-vesting = { path = "../../../substrate/frame/vesting", default-features = false }
 pallet-utility = { path = "../../../substrate/frame/utility", default-features = false }
 frame-election-provider-support = { path = "../../../substrate/frame/election-provider-support", default-features = false }
-pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false, features=["experimental"] }
+pallet-xcm = { path = "../../xcm/pallet-xcm", default-features = false, features = [
+	"experimental",
+] }
 pallet-xcm-benchmarks = { path = "../../xcm/pallet-xcm-benchmarks", default-features = false, optional = true }
 
 frame-benchmarking = { path = "../../../substrate/frame/benchmarking", default-features = false, optional = true }
@@ -94,13 +101,31 @@ pallet-session-benchmarking = { path = "../../../substrate/frame/session/benchma
 pallet-nomination-pools-benchmarking = { path = "../../../substrate/frame/nomination-pools/benchmarking", default-features = false, optional = true }
 hex-literal = { version = "0.4.1", optional = true }
 
-runtime-common = { package = "polkadot-runtime-common", path = "../common", default-features = false, features = ["experimental"] }
+runtime-common = { package = "polkadot-runtime-common", path = "../common", default-features = false, features = [
+	"experimental",
+] }
 runtime-parachains = { package = "polkadot-runtime-parachains", path = "../parachains", default-features = false }
 primitives = { package = "polkadot-primitives", path = "../../primitives", default-features = false }
 
 xcm = { package = "staging-xcm", path = "../../xcm", default-features = false }
 xcm-executor = { package = "staging-xcm-executor", path = "../../xcm/xcm-executor", default-features = false }
 xcm-builder = { package = "staging-xcm-builder", path = "../../xcm/xcm-builder", default-features = false }
+
+
+# Frontier FRAME
+pallet-base-fee = { version = "1.0.0", path = "../../evm-frame/base-fee", default-features = false }
+pallet-dynamic-fee = { version = "4.0.0-dev", path = "../../evm-frame/dynamic-fee", default-features = false }
+pallet-ethereum = { version = "4.0.0-dev", path = "../../evm-frame/ethereum", default-features = false }
+pallet-evm = { path = "../../evm-frame/evm", default-features = false }
+pallet-evm-precompile-modexp = { version = "2.0.0-dev", path = "../../evm-frame/evm/precompile/modexp", default-features = false }
+pallet-evm-precompile-sha3fips = { version = "2.0.0-dev", path = "../../evm-frame/evm/precompile/sha3fips", default-features = false }
+pallet-evm-precompile-simple = { version = "2.0.0-dev", path = "../../evm-frame/evm/precompile/simple", default-features = false }
+pallet-hotfix-sufficients = { version = "1.0.0", path = "../../evm-frame/hotfix-sufficients", default-features = false }
+pallet-evm-chain-id = { version = "1.0.0-dev", path = "../../evm-frame/evm-chain-id", default-features = false }
+
+fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc", default-features = false }
+fp-self-contained = { version = "1.0.0-dev", path = "../../evm-primitives/self-contained", default-features = false }
+
 
 [dev-dependencies]
 hex-literal = "0.4.1"
@@ -109,7 +134,7 @@ keyring = { package = "sp-keyring", path = "../../../substrate/primitives/keyrin
 sp-trie = { path = "../../../substrate/primitives/trie" }
 serde_json = "1.0.96"
 separator = "0.4.1"
-remote-externalities = { package = "frame-remote-externalities" , path = "../../../substrate/utils/frame/remote-externalities" }
+remote-externalities = { package = "frame-remote-externalities", path = "../../../substrate/utils/frame/remote-externalities" }
 tokio = { version = "1.24.2", features = ["macros"] }
 sp-tracing = { path = "../../../substrate/primitives/tracing", default-features = false }
 
@@ -117,7 +142,7 @@ sp-tracing = { path = "../../../substrate/primitives/tracing", default-features 
 substrate-wasm-builder = { path = "../../../substrate/utils/wasm-builder" }
 
 [features]
-default = [ "std" ]
+default = ["std"]
 no_std = []
 only-staking = []
 std = [
@@ -207,6 +232,25 @@ std = [
 	"xcm-builder/std",
 	"xcm-executor/std",
 	"xcm/std",
+
+
+	#frontier
+	"fp-rpc/std",
+	"fp-self-contained/std",
+	"pallet-base-fee/std",
+	"pallet-dynamic-fee/std",
+	"pallet-ethereum/std",
+	"pallet-evm-precompile-modexp/std",
+	"pallet-evm/std",
+	"pallet-evm-precompile-simple/std",
+	"pallet-evm-precompile-sha3fips/std",
+	"pallet-evm-precompile-simple/std",
+	"pallet-evm-chain-id/std",
+
+		 "pallet-hotfix-sufficients/std",
+
+
+
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",
@@ -259,6 +303,11 @@ runtime-benchmarks = [
 	"sp-staking/runtime-benchmarks",
 	"xcm-builder/runtime-benchmarks",
 	"xcm-executor/runtime-benchmarks",
+
+
+	"pallet-ethereum/runtime-benchmarks",
+    "pallet-evm/runtime-benchmarks",
+	"pallet-hotfix-sufficients/runtime-benchmarks",
 ]
 try-runtime = [
 	"frame-election-provider-support/try-runtime",
@@ -311,9 +360,9 @@ try-runtime = [
 # A feature that should be enabled when the runtime should be build for on-chain
 # deployment. This will disable stuff that shouldn't be part of the on-chain wasm
 # to make it smaller like logging for example.
-on-chain-release-build = [ "sp-api/disable-logging" ]
+on-chain-release-build = ["sp-api/disable-logging"]
 
 # Set timing constants (e.g. session period) to faster versions to speed up testing.
 fast-runtime = []
 
-runtime-metrics = [ "runtime-parachains/runtime-metrics", "sp-io/with-tracing" ]
+runtime-metrics = ["runtime-parachains/runtime-metrics", "sp-io/with-tracing"]

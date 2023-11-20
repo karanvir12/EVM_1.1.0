@@ -3,6 +3,7 @@ name = "fp-ethereum"
 version = "1.0.0-dev"
 license = "Apache-2.0"
 description = "Primitive Ethereum types."
+edition = "2021"
 
 
 [package.metadata.docs.rs]

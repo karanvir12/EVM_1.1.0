@@ -3,6 +3,7 @@ name = "fp-storage"
 version = "2.0.0"
 license = "Apache-2.0"
 description = "Storage primitives for Ethereum RPC (web3) compatibility layer for Substrate."
+edition = "2021"
 
 
 [package.metadata.docs.rs]

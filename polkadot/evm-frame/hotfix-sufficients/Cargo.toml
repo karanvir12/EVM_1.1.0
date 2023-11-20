@@ -4,6 +4,7 @@ version = "1.0.0"
 license = "Apache-2.0"
 readme = "README.md"
 description = "Hotfix zero-value account sufficients with non-zero-value nonces."
+edition = "2021"
 
 
 [package.metadata.docs.rs]

@@ -3,6 +3,7 @@ name = "pallet-base-fee"
 version = "1.0.0"
 license = "Apache-2.0"
 description = "EIP-1559 fee utils."
+edition = "2021"
 
 
 [package.metadata.docs.rs]
@@ -27,7 +28,10 @@ fp-evm = { version = "3.0.0-dev", path = "../../evm-primitives/evm", default-fea
 
 [dev-dependencies]
 # Substrate
-sp-io = {  path = "../../../substrate/primitives/io", default-features = false }
+
+#sp-io = {  path = "../../../substrate/primitives/io", default-features = false }
+
+sp-io = {  path = "../../../substrate/primitives/io", default-features = false , features = ["default"] }
 
 [features]
 default = ["std"]
