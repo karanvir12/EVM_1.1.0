@@ -16,7 +16,7 @@
 
 //! Polkadot service. Specialized wrapper over substrate service.
 
-#![deny(unused_results)]
+// #![deny(unused_results)]
 
 pub mod benchmarking;
 pub mod chain_spec;

@@ -9,24 +9,32 @@ edition = "2021"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-ethereum = {  version = "0.14.0", features = ["with-codec"],default-features = false }
-ethereum-types = { version = "0.14.1",default-features = false }
-evm = { git = "https://github.com/rust-blockchain/evm", rev = "b7b82c7e1fc57b7449d6dfa6826600de37cc1e65", features = ["with-codec"], default-features = false }
+ethereum = { version = "0.14.0", features = [
+	"with-codec",
+], default-features = false }
+ethereum-types = { version = "0.14.1", default-features = false }
+evm = { git = "https://github.com/rust-blockchain/evm", rev = "b7b82c7e1fc57b7449d6dfa6826600de37cc1e65", features = [
+	"with-codec",
+], default-features = false }
 #evm = { version = "0.40.0", default-features = false , features = ["with-codec"]}
 
-scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = [
+	"derive",
+] }
 
 rlp = { version = "0.5.2", default-features = false }
 
 
-scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.9.0", default-features = false, features = [
+	"derive",
+] }
 
 # Substrate
 
-frame-support = { path = "../../../substrate/frame/support", default-features = false}
+frame-support = { path = "../../../substrate/frame/support", default-features = false }
 
-frame-system = { path = "../../../substrate/frame/system", default-features = false}
-sp-io = {  path = "../../../substrate/primitives/io", default-features = false }
+frame-system = { path = "../../../substrate/frame/system", default-features = false }
+sp-io = { path = "../../../substrate/primitives/io", default-features = false }
 sp-runtime = { path = "../../../substrate/primitives/runtime", default-features = false }
 
 sp-std = { path = "../../../substrate/primitives/std", default-features = false }
@@ -36,12 +44,12 @@ fp-ethereum = { version = "1.0.0-dev", path = "../../evm-primitives/ethereum", d
 fp-evm = { version = "3.0.0-dev", path = "../../evm-primitives/evm", default-features = false }
 fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc", default-features = false }
 fp-storage = { version = "2.0.0", path = "../../evm-primitives/storage", default-features = false }
- pallet-evm = { version = "6.0.0-dev", path = "../evm", default-features = false }
+pallet-evm = { version = "6.0.0-dev", path = "../evm", default-features = false }
 
 fp-self-contained = { version = "1.0.0-dev", path = "../../evm-primitives/self-contained", default-features = false }
 
 
-pallet-timestamp = { path = "../../../substrate/frame/timestamp", default-features = false}
+pallet-timestamp = { path = "../../../substrate/frame/timestamp", default-features = false }
 
 
 [dev-dependencies]
@@ -50,7 +58,7 @@ libsecp256k1 = { version = "0.7.1", features = ["static-context", "hmac"] }
 #rlp = { version = "0.5.2", default-features = false}
 # Substrate
 pallet-balances = { path = "../../../substrate/frame/balances", default-features = false }
- #pallet-timestamp = { path = "../../../substrate/frame/timestamp", default-features = false}
+#pallet-timestamp = { path = "../../../substrate/frame/timestamp", default-features = false}
 sp-core = { path = "../../../substrate/primitives/core", default-features = false }
 # Frontier
 #fp-self-contained = { version = "1.0.0-dev", path = "../../evm-primitives/self-contained", default-features = false }
@@ -89,7 +97,7 @@ runtime-benchmarks = [
 	"frame-support/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"pallet-evm/runtime-benchmarks",
-		"pallet-timestamp/runtime-benchmarks",
+	"pallet-timestamp/runtime-benchmarks",
 
 ]
 try-runtime = [

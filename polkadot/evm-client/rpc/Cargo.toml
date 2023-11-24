@@ -28,7 +28,7 @@ rlp = { version = "0.5.2", default-features = false }
 scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
 
 schnellru = "0.2.1"
-serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+# serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 thiserror = "1.0"
 tokio = { version = "1.32.0", features = ["sync"] , default-features = false}
 

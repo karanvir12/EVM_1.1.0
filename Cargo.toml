@@ -493,6 +493,7 @@ members = [
 	"substrate/utils/wasm-builder",
 ]
 
+# default-members = ["polkadot"]
 exclude = [
 	"cumulus/bridges/bin/runtime-common",
 	"cumulus/bridges/modules/grandpa",

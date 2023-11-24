@@ -25,4 +25,4 @@ fp-consensus = { version = "2.0.0-dev", path = "../../evm-primitives/consensus",
 
 
 fp-rpc = { version = "3.0.0-dev", path = "../../evm-primitives/rpc" , features = ["default"]}
-fc-db = { path = "../db" }
+# fc-db = { path = "../db" }

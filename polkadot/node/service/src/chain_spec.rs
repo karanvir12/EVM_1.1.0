@@ -37,21 +37,35 @@ use polkadot_runtime_constants::currency::UNITS as DOT;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 
+
+use polkadot_runtime::EVMChainIdConfig;
+use polkadot_runtime::EvmConfig;
+use polkadot_runtime::EthereumConfig;
+use sp_core::{H160, U256};
+use std::str::FromStr;
+use std::collections::BTreeMap;
+
+
+
 #[cfg(feature = "rococo-native")]
 use rococo_runtime as rococo;
 #[cfg(feature = "rococo-native")]
 use rococo_runtime_constants::currency::UNITS as ROC;
-use sc_chain_spec::ChainSpecExtension;
+// use sc_chain_spec::ChainSpecExtension;
 #[cfg(any(
 	feature = "polkadot-native",
 	feature = "kusama-native",
 	feature = "westend-native",
 	feature = "rococo-native"
 ))]
-use sc_chain_spec::ChainType;
+//use sc_chain_spec::ChainType;
+use sc_chain_spec::{ChainSpecExtension, ChainType};
+
 use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public};
 use sp_runtime::traits::IdentifyAccount;
+// use sp_runtime::{traits::IdentifyAccount, Perbill};
+
 #[cfg(any(
 	feature = "polkadot-native",
 	feature = "kusama-native",
@@ -1065,7 +1079,9 @@ fn rococo_staging_testnet_config_genesis(
 /// Returns the properties for the [`PolkadotChainSpec`].
 pub fn polkadot_chain_spec_properties() -> serde_json::map::Map<String, serde_json::Value> {
 	serde_json::json!({
-		"tokenDecimals": 10,
+		"tokenDecimals": 18,
+		"tokenSymbol":"Saita",
+
 	})
 	.as_object()
 	.expect("Map given; qed")
@@ -1278,6 +1294,7 @@ pub fn polkadot_testnet_genesis(
 	)>,
 	_root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
+	chain_id: u64,
 ) -> polkadot::RuntimeGenesisConfig {
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
@@ -1342,6 +1359,55 @@ pub fn polkadot_testnet_genesis(
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
 		nomination_pools: Default::default(),
+
+			// EVM compatibility
+
+			// EVM compatibility
+		evm_chain_id: EVMChainIdConfig {
+			chain_id,
+			..Default::default()
+		},
+		evm: EvmConfig {
+			accounts: {
+				let mut map = BTreeMap::new();
+				map.insert(
+					// H160 address of Alice dev account
+					// Derived from SS58 (42 prefix) address
+					// SS58: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					// hex: 0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d
+					// Using the full hex key, truncating to the first 20 bytes (the first 40 hex chars)
+					H160::from_str("d43593c715fdd31c61141abd04a99fd6822c8558")
+						.expect("internal H160 is valid; qed"),
+					fp_evm::GenesisAccount {
+						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
+							.expect("internal U256 is valid; qed"),
+						code: Default::default(),
+						nonce: Default::default(),
+						storage: Default::default(),
+					},
+				);
+				map.insert(
+					// H160 address of CI test runner account
+					H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b")
+						.expect("internal H160 is valid; qed"),
+					fp_evm::GenesisAccount {
+						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
+							.expect("internal U256 is valid; qed"),
+				
+						code: Default::default(),
+						nonce: Default::default(),
+						storage: Default::default(),
+			
+					},
+				);
+				map
+			},
+			..Default::default()
+		},
+		//ethereum: Default::default(),
+		ethereum: Default::default(),
+		dynamic_fee: Default::default(),
+		base_fee: Default::default(),
 	}
 }
 
@@ -1619,6 +1685,8 @@ fn polkadot_development_config_genesis(wasm_binary: &[u8]) -> polkadot::RuntimeG
 		vec![get_authority_keys_from_seed_no_beefy("Alice")],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
+		100,
+		
 	)
 }
 
@@ -1789,6 +1857,7 @@ fn polkadot_local_testnet_genesis(wasm_binary: &[u8]) -> polkadot::RuntimeGenesi
 		],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
+		100,
 	)
 }
 

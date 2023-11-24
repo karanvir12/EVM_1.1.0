@@ -142,6 +142,26 @@ polkadot-node-core-pvf-checker = { path = "../core/pvf-checker", optional = true
 polkadot-node-core-runtime-api = { path = "../core/runtime-api", optional = true }
 polkadot-statement-distribution = { path = "../network/statement-distribution", optional = true }
 
+
+# Frontier
+fc-cli = { path = "../../evm-client/cli" }
+fc-consensus = { path = "../../evm-client/consensus" }
+fc-db = { path = "../../evm-client/db" }
+fc-mapping-sync = { path = "../../evm-client/mapping-sync" }
+fc-rpc = { path = "../../evm-client/rpc" }
+fc-rpc-core = { path = "../../evm-client/rpc-core" }
+fp-consensus = { path = "../../evm-primitives/consensus" }
+fp-dynamic-fee = { path = "../../evm-primitives/dynamic-fee" }
+fp-evm = { path = "../../evm-primitives/evm" }
+fp-rpc = { path = "../../evm-primitives/rpc" }
+fp-storage = { path = "../../evm-primitives/storage" }
+pallet-evm = {path = "../../evm-frame/evm"}
+pallet-ethereum = {path = "../../evm-frame/ethereum"}
+
+
+
+
+
 [dev-dependencies]
 polkadot-test-client = { path = "../test/client" }
 polkadot-node-subsystem-test-helpers = { path = "../subsystem-test-helpers" }

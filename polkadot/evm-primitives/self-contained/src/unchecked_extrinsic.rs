@@ -19,6 +19,7 @@ use frame_support::{
 	dispatch::{DispatchInfo, GetDispatchInfo},
 	traits::ExtrinsicCall,
 };
+use sp_runtime::serde;
 use scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_runtime::{
@@ -188,13 +189,13 @@ where
 	}
 }
 
-#[cfg(feature = "serde")]
+// #[cfg(feature = "serde")]
 impl<Address: Encode, Signature: Encode, Call: Encode, Extra: SignedExtension> serde::Serialize
 	for UncheckedExtrinsic<Address, Call, Signature, Extra>
 {
 	fn serialize<S>(&self, seq: S) -> Result<S::Ok, S::Error>
 	where
-		S: ::serde::Serializer,
+		S: sp_runtime::serde::Serializer,
 	{
 		self.0.serialize(seq)
 	}
