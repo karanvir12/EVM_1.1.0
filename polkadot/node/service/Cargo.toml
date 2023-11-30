@@ -8,9 +8,14 @@ license.workspace = true
 
 [dependencies]
 # Substrate Client
+
+jsonrpsee = { version = "0.16.2", features = ["server"] }
+clap = { version = "4.2.5", features = ["derive"], optional = true }
+
 sc-authority-discovery = { path = "../../../substrate/client/authority-discovery" }
 babe = { package = "sc-consensus-babe", path = "../../../substrate/client/consensus/babe" }
 beefy = { package = "sc-consensus-beefy", path = "../../../substrate/client/consensus/beefy" }
+
 grandpa = { package = "sc-consensus-grandpa", path = "../../../substrate/client/consensus/grandpa" }
 mmr-gadget = { path = "../../../substrate/client/merkle-mountain-range" }
 sp-mmr-primitives = { path = "../../../substrate/primitives/merkle-mountain-range" }
@@ -20,6 +25,21 @@ sc-client-api = { path = "../../../substrate/client/api" }
 sc-client-db = { path = "../../../substrate/client/db" }
 sc-consensus = { path = "../../../substrate/client/consensus/common" }
 sc-consensus-slots = { path = "../../../substrate/client/consensus/slots" }
+sc-consensus-babe-rpc = { path = "../../../substrate/client/consensus/babe/rpc" }
+sc-consensus-beefy-rpc = { path = "../../../substrate/client/consensus/beefy/rpc" }
+sc-consensus-grandpa-rpc = { path = "../../../substrate/client/consensus/grandpa/rpc" }
+#sc-consensus-babe = { path = "../../../substrate/client/consensus/babe" }
+
+#txpool-api = { package = "sc-transaction-pool-api", path = "../../../substrate/client/transaction-pool/api" }
+
+frame-rpc-system = { package = "substrate-frame-rpc-system", path = "../../../substrate/utils/frame/rpc/system" }
+mmr-rpc = { path = "../../../substrate/client/merkle-mountain-range/rpc" }
+
+substrate-state-trie-migration-rpc = { path = "../../../substrate/utils/frame/rpc/state-trie-migration-rpc" }
+sc-rpc = { path = "../../../substrate/client/rpc" }
+sc-consensus-epochs = { path = "../../../substrate/client/consensus/epochs" }
+
+
 sc-executor = { path = "../../../substrate/client/executor" }
 sc-network = { path = "../../../substrate/client/network" }
 sc-network-common = { path = "../../../substrate/client/network/common" }
@@ -58,6 +78,7 @@ sp-consensus-babe = { path = "../../../substrate/primitives/consensus/babe" }
 sp-state-machine = { path = "../../../substrate/primitives/state-machine" }
 sp-weights = { path = "../../../substrate/primitives/weights" }
 sp-version = { path = "../../../substrate/primitives/version" }
+pallet-transaction-payment-rpc = { path = "../../../substrate/frame/transaction-payment/rpc" }
 
 # Substrate Pallets
 pallet-babe = { path = "../../../substrate/frame/babe" }
@@ -104,6 +125,7 @@ polkadot-node-subsystem-types = { path = "../subsystem-types" }
 polkadot-runtime-parachains = { path = "../../runtime/parachains" }
 polkadot-node-network-protocol = { path = "../network/protocol" }
 polkadot-runtime-common = { path = "../../runtime/common" }
+#polkadot-client = { path = "../../client", default-features = false, optional = true }
 
 # Polkadot Runtime Constants
 polkadot-runtime-constants = { path = "../../runtime/polkadot/constants", optional = true }
@@ -147,6 +169,8 @@ polkadot-statement-distribution = { path = "../network/statement-distribution", 
 fc-cli = { path = "../../evm-client/cli" }
 fc-consensus = { path = "../../evm-client/consensus" }
 fc-db = { path = "../../evm-client/db" }
+fc-storage = {path = "../../evm-client/storage" }
+
 fc-mapping-sync = { path = "../../evm-client/mapping-sync" }
 fc-rpc = { path = "../../evm-client/rpc" }
 fc-rpc-core = { path = "../../evm-client/rpc-core" }
@@ -201,7 +225,13 @@ full-node = [
 	"polkadot-node-core-pvf-checker",
 	"polkadot-node-core-runtime-api",
 	"polkadot-statement-distribution",
+	#"polkadot-client",
 ]
+
+# sql = [
+# 	"fc-db/sql",
+# 	"fc-mapping-sync/sql",
+# ]
 
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #
@@ -256,6 +286,7 @@ fast-runtime = [
 
 malus = [ "full-node" ]
 runtime-metrics = [
+#	"polkadot-client/runtime-metrics",
 	"kusama-runtime?/runtime-metrics",
 	"polkadot-runtime-parachains/runtime-metrics",
 	"polkadot-runtime?/runtime-metrics",

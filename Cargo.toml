@@ -585,6 +585,11 @@ exclude = [
 	"cumulus/xcm/xcm-emulator",
 ]
 
+# sql = [
+# 	"fc-db/sql",
+# 	"fc-mapping-sync/sql",
+# ]
+
 [profile.release]
 # Polkadot runtime requires unwinding.
 panic = "unwind"

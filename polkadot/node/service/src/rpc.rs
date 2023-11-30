@@ -24,12 +24,10 @@ use sp_inherents::CreateInherentDataProviders;
 use jsonrpsee::RpcModule;
 use polkadot_primitives::{AccountId, Balance, Block, BlockNumber, Hash, Nonce};
 use sc_client_api::AuxStore;
-use sc_consensus_beefy::communication::notification::{
+use beefy::communication::notification::{
 	BeefyBestBlockStream, BeefyVersionedFinalityProofStream,
 };
-
-
-use sc_consensus_grandpa::FinalityProofProvider;
+use grandpa::FinalityProofProvider;
 pub use sc_rpc::{DenyUnsafe, SubscriptionTaskExecutor};
 //use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
@@ -75,7 +73,7 @@ pub type RpcExtension = RpcModule<()>;
 /// Extra dependencies for BABE.
 pub struct BabeDeps {
 	/// A handle to the BABE worker for issuing requests.
-	pub babe_worker_handle:sc_consensus_babe::BabeWorkerHandle<Block>,
+	pub babe_worker_handle: babe::BabeWorkerHandle<Block>,
 	/// The keystore that manages the keys of the node.
 	pub keystore: KeystorePtr,
 }
@@ -83,11 +81,11 @@ pub struct BabeDeps {
 /// Dependencies for GRANDPA
 pub struct GrandpaDeps<B> {
 	/// Voting round info.
-	pub shared_voter_state:sc_consensus_grandpa::SharedVoterState,
+	pub shared_voter_state:grandpa::SharedVoterState,
 	/// Authority set info.
-	pub shared_authority_set:sc_consensus_grandpa::SharedAuthoritySet<Hash, BlockNumber>,
+	pub shared_authority_set:grandpa::SharedAuthoritySet<Hash, BlockNumber>,
 	/// Receives notifications about justification events from Grandpa.
-	pub justification_stream:sc_consensus_grandpa::GrandpaJustificationStream<Block>,
+	pub justification_stream:grandpa::GrandpaJustificationStream<Block>,
 	/// Executor to drive the subscription manager in the Grandpa RPC handler.
 	pub subscription_executor: sc_rpc::SubscriptionTaskExecutor,
 	/// Finality proof provider.
@@ -105,7 +103,7 @@ pub struct BeefyDeps {
 }
 
 /// Full client dependencies
-pub struct FullDeps<C, P, SC, B,A:ChainApi,CT> {
+pub struct FullDeps<C, P, SC, B,A:ChainApi,CT, CIDP> {
 	/// The client instance to use.
 	pub client: Arc<C>,
 	/// Transaction pool instance.
@@ -124,8 +122,8 @@ pub struct FullDeps<C, P, SC, B,A:ChainApi,CT> {
 	pub beefy: BeefyDeps,
 	/// Backend used by the node.
 	//pub backend: Arc<B>,
-	//pub backend: Arc<dyn fc_db::BackendReader<Block> + Send + Sync>,
-	pub backend:Arc<dyn fc_api::Backend<B>>,
+	pub backend: Arc<dyn fc_db::BackendReader<Block> + Send + Sync>,
+
     pub sync: Arc<SyncingService<Block>>,
 
 /// Graph pool instance.	
@@ -153,9 +151,8 @@ pub execute_gas_limit_multiplier: u64,
 /// Mandated parent hashes for a given block hash.
 pub forced_parent_hashes: Option<BTreeMap<H256, H256>>,
 
-// /// Something that can create the inherent data providers for pending state
- //pub pending_create_inherent_data_providers: CIDP,
- pub converter: Option<CT>,
+/// Something that can create the inherent data providers for pending state
+pub pending_create_inherent_data_providers: CIDP,
 
 
 }
@@ -256,9 +253,8 @@ pub forced_parent_hashes: Option<BTreeMap<H256, H256>>,
 // }
 
 /// Instantiate all RPC extensions.
-pub fn create_full<C, P, SC, B,BE,A,CT>(
-	//FullDeps { client, pool, select_chain, chain_spec, deny_unsafe, babe, grandpa, beefy, backend ,sync,graph,is_authority,enable_dev_signer,filter_pool,fee_history_cache,fee_history_cache_limit,overrides,execute_gas_limit_multiplier,forced_parent_hashes,max_past_logs,network,block_data_cache,pending_create_inherent_data_providers} : FullDeps<C, P, SC, B, CT, CIDP, A >,
-	 deps: FullDeps<C, P, SC,B,A, CT>,
+pub fn create_full<C, P, SC, B,BE,A,CT, CIDP>(
+	FullDeps { client, pool, select_chain, chain_spec, deny_unsafe, babe, grandpa, beefy, backend ,sync,graph,is_authority,enable_dev_signer,filter_pool,fee_history_cache,fee_history_cache_limit,overrides,execute_gas_limit_multiplier,forced_parent_hashes,max_past_logs,network,block_data_cache,pending_create_inherent_data_providers} : FullDeps<C, P, SC, B, CT, CIDP, A >,
 
     subscription_task_executor: SubscriptionTaskExecutor,
 	pubsub_notification_sinks: Arc<
@@ -282,14 +278,14 @@ where
 	//C::Api: mmr_rpc::MmrRuntimeApi<Block, <Block as sp_runtime::traits::Block>::Hash, BlockNumber>,
     C: Send + Sync + 'static,
 
-    C: BlockchainEvents<Block> + 'static  ,	
-	C:  sc_client_api::UsageProvider<B> ,
+    C: BlockchainEvents<Block> + 'static,	
+
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
 	C::Api: BabeApi<Block>,
 	C::Api: BlockBuilder<Block>,
 	P: TransactionPool + Sync + Send + 'static,
 	SC: SelectChain<Block> + 'static,
-	B: sc_client_api::Backend<Block> + Send + Sync + 'static + sp_api::BlockT,     // + sp_api::BlockT
+	B: sc_client_api::Backend<Block> + Send + Sync + 'static,
 	B::State: sc_client_api::StateBackend<sp_runtime::traits::HashingFor<Block>>,
   //  P: TransactionPool<Block=Block> + 'static,
     C::Api: fp_rpc::ConvertTransactionRuntimeApi<Block>,	
@@ -298,9 +294,8 @@ where
 	P: TransactionPool<Block=Block> + 'static,
 	BE: Backend<Block> + 'static,
 	C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError> + StorageProvider<Block, BE>,
-	//CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
-	CT: fp_rpc::ConvertTransaction<<Block as BlockT>::Extrinsic> + Send + Sync + 'static,
-	//CIDP: CreateInherentDataProviders<B, ()> + Send + 'static ,
+	CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
+
 {
 	use frame_rpc_system::{System, SystemApiServer};
 //	use mmr_rpc::{Mmr, MmrApiServer};
@@ -320,24 +315,22 @@ where
 
 
 	let mut io = RpcModule::new(());
-    let FullDeps { client, pool, select_chain, chain_spec, deny_unsafe, babe, grandpa,beefy,backend,	
+    let FullDeps { client, pool, select_chain, chain_spec, deny_unsafe, babe, grandpa,graph,	
 		is_authority,	
 		enable_dev_signer,	
 		network,	
         sync,
 		filter_pool,	
-		//backend,	
+		backend,	
 		max_past_logs,	
 		fee_history_cache,	
 		fee_history_cache_limit,	
 		overrides,	
 		block_data_cache,	
 		execute_gas_limit_multiplier,
-		//beefy,
+		beefy,
         forced_parent_hashes,
-		graph,
-        //pending_create_inherent_data_providers,
-		converter
+        pending_create_inherent_data_providers,
     } = deps;
 
 
@@ -452,9 +445,7 @@ where
 	// io.merge(Web3::new(client).into_rpc())?;	
 	// io.merge(Dev::new(client, deny_unsafe).into_rpc())?;
     io.merge(
-		//Eth::<B, C, P, CT, BE, A>::new(
-			Eth::new(	
-
+		Eth::<B, C, P, CT, BE, A, CIDP>::new(
 			client.clone(),
 			//pool.clone(),
             pp,
@@ -472,8 +463,7 @@ where
 			fee_history_cache_limit,
 			execute_gas_limit_multiplier,
 			forced_parent_hashes,
-			
-			//pending_create_inherent_data_providers,
+			pending_create_inherent_data_providers,
 			Some(Box::new(AuraConsensusDataProvider::new(client.clone()))),
 		)
 	//	.replace_config::<EC>()
@@ -489,7 +479,7 @@ where
 				filter_pool,
 				500_usize, // max stored filters
 				max_past_logs,
-				block_data_cache.clone(),
+				block_data_cache,
 			)
 			.into_rpc(),
 		)?;
