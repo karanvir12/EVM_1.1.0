@@ -34,7 +34,7 @@ use crate::{
 	internal_err,
 };
 
-impl<B, C, P, CT, BE, A, CIDP, EC> Eth<B, C, P, CT, BE, A, CIDP, EC>
+impl<B, C, P, CT, BE, A, EC> Eth<B, C, P, CT, BE, A, EC>
 where
 	B: BlockT,
 	C: ProvideRuntimeApi<B>,

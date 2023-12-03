@@ -26,7 +26,7 @@ use sc_transaction_pool_api::{InPoolTransaction, TransactionPool};
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder as BlockBuilderApi;
 use sp_blockchain::HeaderBackend;
-use sp_inherents::CreateInherentDataProviders;
+// use sp_inherents::CreateInherentDataProviders;
 use sp_runtime::traits::Block as BlockT;
 // Frontier
 use fc_rpc_core::types::*;
@@ -37,7 +37,7 @@ use crate::{
 	frontier_backend_client, internal_err,
 };
 
-impl<B, C, P, CT, BE, A, CIDP, EC> Eth<B, C, P, CT, BE, A, CIDP, EC>
+impl<B, C, P, CT, BE, A, EC> Eth<B, C, P, CT, BE, A, EC>
 where
 	B: BlockT,
 	C: ProvideRuntimeApi<B>,
@@ -45,8 +45,8 @@ where
 	C: HeaderBackend<B> + StorageProvider<B, BE> + 'static,
 	BE: Backend<B> + 'static,
 	P: TransactionPool<Block = B> + 'static,
-	A: ChainApi<Block = B>,
-	CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
+	A: ChainApi<Block = B> + 'static,
+	// CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
 	EC: EthConfig<B, C>,
 {
 	pub async fn balance(
@@ -56,12 +56,9 @@ where
 	) -> RpcResult<U256> {
 		let number_or_hash = number_or_hash.unwrap_or(BlockNumberOrHash::Latest);
 		if number_or_hash == BlockNumberOrHash::Pending {
-			let (hash, api) = self
-				.pending_runtime_api()
-				.await
-				.map_err(|err| internal_err(format!("Create pending runtime api error: {err}")))?;
+			let api = crate::eth::pending_runtime_api(self.client.as_ref(), self.graph.as_ref())?;
 			Ok(api
-				.account_basic(hash, address)
+				.account_basic(self.client.info().best_hash, address)
 				.map_err(|err| internal_err(format!("Fetch account balances failed: {err}")))?
 				.balance)
 		} else if let Ok(Some(id)) = frontier_backend_client::native_block_id::<B, C>(
@@ -95,11 +92,8 @@ where
 	) -> RpcResult<H256> {
 		let number_or_hash = number_or_hash.unwrap_or(BlockNumberOrHash::Latest);
 		if number_or_hash == BlockNumberOrHash::Pending {
-			let (hash, api) = self
-				.pending_runtime_api()
-				.await
-				.map_err(|err| internal_err(format!("Create pending runtime api error: {err}")))?;
-			Ok(api.storage_at(hash, address, index).unwrap_or_default())
+			let api = crate::eth::pending_runtime_api(self.client.as_ref(), self.graph.as_ref())?;
+			Ok(api.storage_at(self.client.info().best_hash, address,  index).unwrap_or_default())
 		} else if let Ok(Some(id)) = frontier_backend_client::native_block_id::<B, C>(
 			self.client.as_ref(),
 			self.backend.as_ref(),
@@ -184,12 +178,9 @@ where
 	) -> RpcResult<Bytes> {
 		let number_or_hash = number_or_hash.unwrap_or(BlockNumberOrHash::Latest);
 		if number_or_hash == BlockNumberOrHash::Pending {
-			let (hash, api) = self
-				.pending_runtime_api()
-				.await
-				.map_err(|err| internal_err(format!("Create pending runtime api error: {err}")))?;
+			let api = crate::eth::pending_runtime_api(self.client.as_ref(), self.graph.as_ref())?;
 			Ok(api
-				.account_code_at(hash, address)
+				.account_code_at(self.client.info().best_hash, address)
 				.unwrap_or_default()
 				.into())
 		} else if let Ok(Some(id)) = frontier_backend_client::native_block_id::<B, C>(

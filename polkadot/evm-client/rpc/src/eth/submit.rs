@@ -26,7 +26,7 @@ use sc_transaction_pool_api::TransactionPool;
 use sp_api::{ApiExt, ProvideRuntimeApi};
 use sp_block_builder::BlockBuilder as BlockBuilderApi;
 use sp_blockchain::HeaderBackend;
-use sp_inherents::CreateInherentDataProviders;
+// use sp_inherents::CreateInherentDataProviders;
 use sp_runtime::{
 	generic::BlockId, traits::Block as BlockT, transaction_validity::TransactionSource,
 };
@@ -39,7 +39,7 @@ use crate::{
 	internal_err,
 };
 
-impl<B, C, P, CT, BE, A, CIDP, EC> Eth<B, C, P, CT, BE, A, CIDP, EC>
+impl<B, C, P, CT, BE, A, EC> Eth<B, C, P, CT, BE, A, EC>
 where
 	B: BlockT,
 	C: ProvideRuntimeApi<B>,
@@ -48,8 +48,8 @@ where
 	BE: Backend<B> + 'static,
 	P: TransactionPool<Block = B> + 'static,
 	CT: ConvertTransaction<<B as BlockT>::Extrinsic> + 'static,
-	A: ChainApi<Block = B>,
-	CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
+	A: ChainApi<Block = B> + 'static,
+	// CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
 	EC: EthConfig<B, C>,
 {
 	pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {

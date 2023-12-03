@@ -18,6 +18,8 @@ sp-runtime = { path = "../../substrate/primitives/runtime" }
 sp-api = { path = "../../substrate/primitives/api" }
 #sp-consensus = { path = "../../substrate/primitives/consensus/common" }
 sp-consensus-babe = { path = "../../substrate/primitives/consensus/babe" }
+sc-consensus-manual-seal = { path = "../../substrate/client/consensus/manual-seal" }
+sp-consensus-aura = { path = "../../substrate/primitives/consensus/aura" }
 sc-chain-spec = { path = "../../substrate/client/chain-spec" }
 sc-rpc = { path = "../../substrate/client/rpc" }
 sc-consensus-babe = { path = "../../substrate/client/consensus/babe" }

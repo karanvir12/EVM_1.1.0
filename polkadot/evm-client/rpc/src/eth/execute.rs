@@ -28,7 +28,7 @@ use sc_transaction_pool::ChainApi;
 use sp_api::{ApiExt, CallApiAt, CallApiAtParams, CallContext, Extensions, ProvideRuntimeApi};
 use sp_block_builder::BlockBuilder as BlockBuilderApi;
 use sp_blockchain::HeaderBackend;
-use sp_inherents::CreateInherentDataProviders;
+// use sp_inherents::CreateInherentDataProviders;
 use sp_io::hashing::{blake2_128, twox_128};
 use sp_runtime::{
 	traits::{Block as BlockT, HashingFor},
@@ -67,15 +67,15 @@ impl EstimateGasAdapter for () {
 	}
 }
 
-impl<B, C, P, CT, BE, A, CIDP, EC> Eth<B, C, P, CT, BE, A, CIDP, EC>
+impl<B, C, P, CT, BE, A, EC> Eth<B, C, P, CT, BE, A, EC>
 where
 	B: BlockT,
 	C: CallApiAt<B> + ProvideRuntimeApi<B>,
 	C::Api: BlockBuilderApi<B> + EthereumRuntimeRPCApi<B>,
 	C: HeaderBackend<B> + StorageProvider<B, BE> + 'static,
 	BE: Backend<B> + 'static,
-	A: ChainApi<Block = B>,
-	CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
+	A: ChainApi<Block = B> + 'static,
+	// CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
 	EC: EthConfig<B, C>,
 {
 	pub async fn call(
@@ -123,9 +123,8 @@ where
 			}
 			None => {
 				// Not mapped in the db, assume pending.
-				let (hash, api) = self.pending_runtime_api().await.map_err(|err| {
-					internal_err(format!("Create pending runtime api error: {err}"))
-				})?;
+				let hash = self.client.info().best_hash;
+				let api = crate::eth::pending_runtime_api(self.client.as_ref(), self.graph.as_ref())?;
 				(hash, api)
 			}
 		};
@@ -436,9 +435,8 @@ where
 			}
 			None => {
 				// Not mapped in the db, assume pending.
-				let (hash, api) = self.pending_runtime_api().await.map_err(|err| {
-					internal_err(format!("Create pending runtime api error: {err}"))
-				})?;
+				let hash = self.client.info().best_hash;
+				let api = crate::eth::pending_runtime_api(self.client.as_ref(), self.graph.as_ref())?;
 				(hash, api)
 			}
 		};

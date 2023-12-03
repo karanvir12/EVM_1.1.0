@@ -55,7 +55,7 @@ pub(crate) enum Error {
 	ApplyExtrinsicFailed(#[from] ApplyExtrinsicFailed),
 }
 
-impl<B, C, P, CT, BE, A, CIDP, EC> Eth<B, C, P, CT, BE, A, CIDP, EC>
+impl<B, C, P, CT, BE, A, EC> Eth<B, C, P, CT, BE, A, EC>
 where
 	B: BlockT,
 	C: ProvideRuntimeApi<B>,
@@ -63,7 +63,7 @@ where
 	C: HeaderBackend<B> + StorageProvider<B, BE> + 'static,
 	BE: Backend<B>,
 	A: ChainApi<Block = B>,
-	CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
+	// CIDP: CreateInherentDataProviders<B, ()> + Send + 'static,
 	EC: EthConfig<B, C>,
 {
 	/// Creates a pending runtime API.

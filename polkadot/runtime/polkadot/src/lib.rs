@@ -51,12 +51,9 @@ use frame_election_provider_support::{
 use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
-		// ConstU32, Contains, EitherOf, EitherOfDiverse, InstanceFilter, KeyOwnerProofSystem,
-		// PrivilegeCmp, ProcessMessage, ProcessMessageError, WithdrawReasons,FindAuthor
-	
-		fungible::ItemOf, AsEnsureOriginWithArg, ConstBool, ConstU128, ConstU16, ConstU32,Contains,
-		Currency, EitherOfDiverse,EitherOf, EqualPrivilegeOnly, Everything, Imbalance, InstanceFilter,
-		KeyOwnerProofSystem, LockIdentifier, Nothing, OnUnbalanced,
+		  ConstU32,Contains,
+		Currency, EitherOfDiverse,EitherOf,  Imbalance, InstanceFilter,
+		KeyOwnerProofSystem, OnUnbalanced,
 		WithdrawReasons,FindAuthor, PrivilegeCmp ,ProcessMessage, ProcessMessageError, OnFinalize, OnTimestampSet
 	
 	
@@ -82,7 +79,7 @@ use primitives::{
 
 //use pallet_evm::FeeCalculator;	
 use pallet_evm::{	
-	Account as EVMAccount, EnsureAccountId20, FeeCalculator, IdentityAddressMapping, EnsureAddressTruncated,GasWeightMapping, HashedAddressMapping, Runner,	
+	Account as EVMAccount, FeeCalculator, HashedAddressMapping, Runner,	
 };	
 // use crate::sp_api_hidden_includes_construct_runtime::hidden_include::dispatch::Dispatchable;	
 
@@ -107,7 +104,7 @@ use sp_runtime::{
 	generic, impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Extrinsic as ExtrinsicT,
-		OpaqueKeys, SaturatedConversion, Verify,PostDispatchInfoOf,DispatchInfoOf,Get, NumberFor, One, UniqueSaturatedInto
+		OpaqueKeys, SaturatedConversion, Verify,PostDispatchInfoOf,DispatchInfoOf,Get
 	},
 	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity,TransactionValidityError},
 	ApplyExtrinsicResult, FixedU128, Perbill, Percent, Permill, RuntimeDebug,

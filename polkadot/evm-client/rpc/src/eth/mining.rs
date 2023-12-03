@@ -26,7 +26,7 @@ use fc_rpc_core::types::*;
 
 use crate::eth::{Eth, EthConfig};
 
-impl<B, C, P, CT, BE, A, CIDP, EC> Eth<B, C, P, CT, BE, A, CIDP, EC>
+impl<B, C, P, CT, BE, A, EC> Eth<B, C, P, CT, BE, A, EC>
 where
 	B: BlockT,
 	A: ChainApi<Block = B>,

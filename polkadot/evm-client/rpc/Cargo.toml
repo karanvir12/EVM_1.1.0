@@ -29,13 +29,13 @@ scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-featu
 
 schnellru = "0.2.1"
 # serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
-thiserror = "1.0"
+# thiserror = "1.0"
 tokio = { version = "1.32.0", features = ["sync"] , default-features = false}
 
 # Substrate
 prometheus-endpoint = { package = "substrate-prometheus-endpoint",path = "../../../substrate/utils/prometheus", default-features = false }
 sc-client-api = {path = "../../../substrate/client/api", default-features = false }
-sc-consensus-aura = {path = "../../../substrate/client/consensus/aura", default-features = false }
+# sc-consensus-aura = {path = "../../../substrate/client/consensus/aura", default-features = false }
 sc-network = {path = "../../../substrate/client/network", default-features = false }
 sc-network-common = {path = "../../../substrate/client/network/common", default-features = false }
 sc-network-sync = {path = "../../../substrate/client/network/sync" , default-features = false}
@@ -50,14 +50,14 @@ sp-api = {path = "../../../substrate/primitives/api", default-features = false, 
 sp-block-builder = {path = "../../../substrate/primitives/block-builder", default-features = false , features = ["default"]}
 sp-blockchain = {path = "../../../substrate/primitives/blockchain" , default-features = false}
 sp-consensus = {path = "../../../substrate/primitives/consensus/common" , default-features = false}
-sp-consensus-aura = {path = "../../../substrate/primitives/consensus/aura", default-features = false , features = ["default"]}
+# sp-consensus-aura = {path = "../../../substrate/primitives/consensus/aura", default-features = false , features = ["default"]}
 sp-core = {path = "../../../substrate/primitives/core" , default-features = false, features = ["default"]}
-sp-inherents = {path = "../../../substrate/primitives/inherents", default-features = false, features = ["default"] }
+# sp-inherents = {path = "../../../substrate/primitives/inherents", default-features = false, features = ["default"] }
 sp-io = { path = "../../../substrate/primitives/io", default-features = false , features = ["default"]}
 sp-runtime = {path = "../../../substrate/primitives/runtime", default-features = false , features = ["default"]}
 sp-state-machine = { path = "../../../substrate/primitives/state-machine", default-features = false , features = ["default"]}
 sp-storage = { path = "../../../substrate/primitives/storage", default-features = false, features = ["default"] }
-sp-timestamp = { path = "../../../substrate/primitives/timestamp", default-features = false , features = ["default"]}
+# sp-timestamp = { path = "../../../substrate/primitives/timestamp", default-features = false , features = ["default"]}
 # Frontier
 fc-api = { path = "../api", default-features = false}
 fc-mapping-sync = { path = "../mapping-sync", default-features = false }	

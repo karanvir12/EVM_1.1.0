@@ -23,11 +23,12 @@ pub mod chain_spec;
 //mod rpc;
 mod fake_runtime_api;
 mod grandpa_support;
+use std::path::Path;
 mod parachains_db;
 mod relay_chain_selection;
 use std::collections::BTreeMap;
 use std ::{	sync::{ Mutex}};
-
+use fc_mapping_sync::sql::SyncWorker;
 
 #[cfg(feature = "full-node")]
 pub mod overseer;
@@ -634,16 +635,37 @@ where
 		Some(shared_authority_set.clone()),
 	);
 
-
-
-
-	let frontier_backend = match FrontierBackend::open(client.clone(), &config.database, &db_config_dir(&config)) {
-		Ok(backend) => Arc::new(backend),
-		Err(err) => {
-			let service_error = SubstrateServiceError::Other(err.into());
-			return Err(service_error.into());
+	let overrides = polkadot_rpc::overrides_handle(client.clone());
+	let eth: polkadot_rpc::EthConfiguration = Default::default();
+	let frontier_backend = match eth.frontier_backend_type {
+		polkadot_rpc::BackendType::KeyValue => FrontierBackend::KeyValue(fc_db::kv::Backend::open(
+			Arc::clone(&client),
+			&config.database,
+			&db_config_dir(config),
+		)?),
+		polkadot_rpc::BackendType::Sql => {
+			let db_path = db_config_dir(config).join("sql");
+			std::fs::create_dir_all(&db_path).expect("failed creating sql db directory");
+			let backend = futures::executor::block_on(fc_db::sql::Backend::new(
+				fc_db::sql::BackendConfig::Sqlite(fc_db::sql::SqliteBackendConfig {
+					path: Path::new("sqlite:///")
+						.join(db_path)
+						.join("frontier.db3")
+						.to_str()
+						.unwrap(),
+					create_if_missing: true,
+					thread_count: eth.frontier_sql_backend_thread_count,
+					cache_size: eth.frontier_sql_backend_cache_size,
+				}),
+				eth.frontier_sql_backend_pool_size,
+				std::num::NonZeroU32::new(eth.frontier_sql_backend_num_ops_timeout),
+				overrides.clone(),
+			))
+			.unwrap_or_else(|err| panic!("failed creating sql backend: {:?}", err));
+			FrontierBackend::Sql(backend)
 		}
 	};
+
 	let prometheus_registry = config.prometheus_registry().cloned();
 	let overrides = polkadot_rpc::overrides_handle(client.clone());
 	let block_data_cache = Arc::new(fc_rpc::EthBlockDataCacheTask::new(
@@ -939,7 +961,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		select_chain,
 		import_queue,
 		transaction_pool,
-		other: (rpc_extensions_builder, import_setup, rpc_setup, slot_duration, mut telemetry),
+		other: (rpc_extensions_builder, import_setup, rpc_setup, slot_duration, mut telemetry,frontier_backend),
 	} = new_partial::<SelectRelayChain<_>>(&mut config, basics, select_chain)?;
 
 	let shared_voter_state = rpc_setup;
@@ -1231,8 +1253,8 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 				filter_pool: filter_pool.clone(),
 				network: network.clone(),
 				deny_unsafe,
-				sync,
-				forced_parent_hashes,
+				sync: sync_service.clone(),
+				forced_parent_hashes:None,
 				babe:polkadot_rpc::BabeDeps {
 					keystore: keystore.clone(),
 					babe_worker_handle: babe_worker_handle.clone(),
@@ -1305,7 +1327,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 	task_manager: &TaskManager,
 	client: Arc<FullClient>,
 	backend: Arc<FullBackend>,
-	frontier_backend: FrontierBackend,
+	frontier_backend: FrontierBackend<Block>,
 	filter_pool: Option<FilterPool>,
 	overrides: Arc<OverrideHandle<Block>>,
 	fee_history_cache: FeeHistoryCache,
@@ -1344,7 +1366,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 			task_manager.spawn_essential_handle().spawn_blocking(
 				"frontier-mapping-sync-worker",
 				Some("frontier"),
-				fc_db::sql::SyncWorker::run(
+				SyncWorker::run(
 					client.clone(),
 					backend,
 					Arc::new(b),

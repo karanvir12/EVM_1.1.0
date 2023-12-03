@@ -171,7 +171,7 @@ fc-consensus = { path = "../../evm-client/consensus" }
 fc-db = { path = "../../evm-client/db" }
 fc-storage = {path = "../../evm-client/storage" }
 
-fc-mapping-sync = { path = "../../evm-client/mapping-sync" }
+fc-mapping-sync = { path = "../../evm-client/mapping-sync",features = ["sql"] }
 fc-rpc = { path = "../../evm-client/rpc" }
 fc-rpc-core = { path = "../../evm-client/rpc-core" }
 fp-consensus = { path = "../../evm-primitives/consensus" }
@@ -228,10 +228,10 @@ full-node = [
 	#"polkadot-client",
 ]
 
-# sql = [
-# 	"fc-db/sql",
-# 	"fc-mapping-sync/sql",
-# ]
+sql = [
+	"fc-db/sql",
+	"fc-mapping-sync/sql",
+]
 
 # Configure the native runtimes to use. Polkadot is enabled by default.
 #

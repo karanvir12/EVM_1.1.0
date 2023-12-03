@@ -38,7 +38,7 @@ mod web3;
 pub use self::txpool::TxPool;
 pub use self::{
 	eth::{
-		format, pending, EstimateGasAdapter, Eth, EthBlockDataCacheTask, EthConfig, EthFilter,
+		format, EstimateGasAdapter, Eth, EthBlockDataCacheTask, EthConfig, EthFilter,
 		EthTask,
 	},
 	eth_pubsub::{EthPubSub, EthereumSubIdProvider},
