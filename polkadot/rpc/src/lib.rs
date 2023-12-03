@@ -34,24 +34,18 @@ use sp_block_builder::BlockBuilder;
 use sp_blockchain::{ Error as BlockChainError, HeaderBackend, HeaderMetadata };
 use sp_consensus_babe::BabeApi;
 use sp_keystore::KeystorePtr;
-
-use fc_rpc::EthTask;
+pub use fc_storage::overrides_handle;
 use sc_client_api::{ backend::{ Backend, StorageProvider }, client::BlockchainEvents };
 use std::collections::BTreeMap;
 //=============================================
 use fc_rpc_core::types::{ FeeHistoryCache, FeeHistoryCacheLimit, FilterPool };
 use sc_network::NetworkService;
 use sc_transaction_pool::{ ChainApi, Pool };
-use sp_runtime::{ testing::H256, traits::BlakeTwo256 };
+use sp_runtime::{ testing::H256 };
 // Frontier
 use fc_rpc::{
 	EthBlockDataCacheTask,
 	OverrideHandle,
-	RuntimeApiStorageOverride,
-	SchemaV1Override,
-	SchemaV2Override,
-	SchemaV3Override,
-	StorageOverride,
 };
 use fp_storage::EthereumStorageSchema;
 
@@ -70,36 +64,36 @@ pub struct BabeDeps {
 	pub keystore: KeystorePtr,
 }
 
-pub fn overrides_handle<C, BE>(client: Arc<C>) -> Arc<OverrideHandle<Block>>
-	where
-		C: ProvideRuntimeApi<Block> + StorageProvider<Block, BE> + AuxStore,
-		C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError>,
-		C: Send + Sync + 'static,
-		C::Api: sp_api::ApiExt<Block> +
-			fp_rpc::EthereumRuntimeRPCApi<Block> +
-			fp_rpc::ConvertTransactionRuntimeApi<Block>,
-		BE: Backend<Block> + 'static,
-		BE::State: sc_client_api::StateBackend<BlakeTwo256>
-{
-	let mut overrides_map = BTreeMap::new();
-	overrides_map.insert(
-		EthereumStorageSchema::V1,
-		Box::new(SchemaV1Override::new(client.clone())) as Box<dyn StorageOverride<_>>
-	);
-	overrides_map.insert(
-		EthereumStorageSchema::V2,
-		Box::new(SchemaV2Override::new(client.clone())) as Box<dyn StorageOverride<_>>
-	);
-	overrides_map.insert(
-		EthereumStorageSchema::V3,
-		Box::new(SchemaV3Override::new(client.clone())) as Box<dyn StorageOverride<_>>
-	);
+// pub fn overrides_handle<C, BE>(client: Arc<C>) -> Arc<OverrideHandle<Block>>
+// 	where
+// 		C: ProvideRuntimeApi<Block> + StorageProvider<Block, BE> + AuxStore,
+// 		C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError>,
+// 		C: Send + Sync + 'static,
+// 		C::Api: sp_api::ApiExt<Block> +
+// 			fp_rpc::EthereumRuntimeRPCApi<Block> +
+// 			fp_rpc::ConvertTransactionRuntimeApi<Block>,
+// 		BE: Backend<Block> + 'static,
+// 		BE::State: sc_client_api::StateBackend<BlakeTwo256>
+// {
+// 	let mut overrides_map = BTreeMap::new();
+// 	overrides_map.insert(
+// 		EthereumStorageSchema::V1,
+// 		Box::new(SchemaV1Override::new(client.clone())) as Box<dyn StorageOverride<_>>
+// 	);
+// 	overrides_map.insert(
+// 		EthereumStorageSchema::V2,
+// 		Box::new(SchemaV2Override::new(client.clone())) as Box<dyn StorageOverride<_>>
+// 	);
+// 	overrides_map.insert(
+// 		EthereumStorageSchema::V3,
+// 		Box::new(SchemaV3Override::new(client.clone())) as Box<dyn StorageOverride<_>>
+// 	);
 
-	Arc::new(OverrideHandle {
-		schemas: overrides_map,
-		fallback: Box::new(fc_rpc::RuntimeApiStorageOverride::new(client)),
-	})
-}
+// 	Arc::new(OverrideHandle {
+// 		schemas: overrides_map,
+// 		fallback: Box::new(fc_rpc::RuntimeApiStorageOverride::new(client)),
+// 	})
+// }
 /// Dependencies for GRANDPA
 pub struct GrandpaDeps<B> {
 	/// Voting round info.
@@ -199,6 +193,7 @@ pub struct EthConfiguration {
 	#[arg(long, default_value = "2048")]
 	pub fee_history_limit: u64,
 
+	/// Maximum fee history cache size.
 	#[arg(long)]
 	pub enable_dev_signer: bool,
 

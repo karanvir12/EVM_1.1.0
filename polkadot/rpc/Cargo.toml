@@ -16,6 +16,7 @@ sp-blockchain = { path = "../../substrate/primitives/blockchain" }
 sp-keystore = { path = "../../substrate/primitives/keystore" }
 sp-runtime = { path = "../../substrate/primitives/runtime" }
 sp-api = { path = "../../substrate/primitives/api" }
+sp-core = { path = "../../substrate/primitives/core" }
 #sp-consensus = { path = "../../substrate/primitives/consensus/common" }
 sp-consensus-babe = { path = "../../substrate/primitives/consensus/babe" }
 sc-consensus-manual-seal = { path = "../../substrate/client/consensus/manual-seal" }

@@ -592,9 +592,6 @@ where
 		);
 
 	let babe_config = babe::configuration(&*client)?;
-	// let (block_import, babe_link) =
-	// 	babe::block_import(babe_config.clone(), beefy_block_import, client.clone())?;
-
 	let (block_import, babe_link) = babe::block_import(
 		babe_config.clone(),
 		grandpa_block_import,
@@ -604,28 +601,7 @@ where
 	
 	
 	let slot_duration = babe_link.config().slot_duration();
-	// let (import_queue, babe_worker_handle) = babe::import_queue(babe::ImportQueueParams {
-	// 	link: babe_link.clone(),
-	// 	block_import: block_import.clone(),
-	// 	justification_import: Some(Box::new(justification_import)),
-	// 	client: client.clone(),
-	// 	select_chain: select_chain.clone(),
-	// 	create_inherent_data_providers: move |_, ()| async move {
-	// 		let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
 
-	// 		let slot =
-	// 			sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-	// 				*timestamp,
-	// 				slot_duration,
-	// 			);
-
-	// 		Ok((slot, timestamp))
-	// 	},
-	// 	spawner: &task_manager.spawn_essential_handle(),
-	// 	registry: config.prometheus_registry(),
-	// 	telemetry: telemetry.as_ref().map(|x| x.handle()),
-	// 	offchain_tx_pool_factory: OffchainTransactionPoolFactory::new(transaction_pool.clone()),
-	// })?;
 
 	let justification_stream = grandpa_link.justification_stream();
 	let shared_authority_set = grandpa_link.shared_authority_set().clone();
@@ -961,7 +937,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		select_chain,
 		import_queue,
 		transaction_pool,
-		other: (rpc_extensions_builder, import_setup, rpc_setup, slot_duration, mut telemetry,frontier_backend),
+		other: (rpc_extensions_builder, import_setup,babe_worker_handle, rpc_setup, slot_duration, mut telemetry,frontier_backend),
 	} = new_partial::<SelectRelayChain<_>>(&mut config, basics, select_chain)?;
 
 	let shared_voter_state = rpc_setup;

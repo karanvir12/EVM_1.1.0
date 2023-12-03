@@ -23,7 +23,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "512"]
-use pallet_timestamp::WeightInfo;
 use pallet_transaction_payment::CurrencyAdapter;
 use runtime_common::{
 	auctions, claims, crowdloan, impl_runtime_weights, impls::DealWithFees, paras_registrar,
@@ -54,7 +53,7 @@ use frame_support::{
 		  ConstU32,Contains,
 		Currency, EitherOfDiverse,EitherOf,  Imbalance, InstanceFilter,
 		KeyOwnerProofSystem, OnUnbalanced,
-		WithdrawReasons,FindAuthor, PrivilegeCmp ,ProcessMessage, ProcessMessageError, OnFinalize, OnTimestampSet
+		WithdrawReasons,FindAuthor, PrivilegeCmp ,ProcessMessage, ProcessMessageError, OnFinalize
 	
 	
 	},
