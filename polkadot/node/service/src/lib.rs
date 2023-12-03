@@ -84,21 +84,21 @@ use futures::{future, prelude::*};
 
 use fc_db::Backend as FrontierBackend;
 
-pub struct ExecutorDispatchStruct;
-impl sc_executor::NativeExecutionDispatch for ExecutorDispatchStruct {
-    /// Only enable the benchmarking host functions when we actually want to benchmark.
-    #[cfg(feature = "runtime-benchmarks")]
-    type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
-    /// Otherwise we only use the default Substrate host functions.
-    #[cfg(not(feature = "runtime-benchmarks"))]
-    type ExtendHostFunctions = ();
-    fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-        polkadot_runtime::api::dispatch(method, data)
-    }
-    fn native_version() -> sc_executor::NativeVersion {
-        polkadot_runtime::native_version()
-    }
-}
+// pub struct ExecutorDispatchStruct;
+// impl sc_executor::NativeExecutionDispatch for ExecutorDispatchStruct {
+//     /// Only enable the benchmarking host functions when we actually want to benchmark.
+//     #[cfg(feature = "runtime-benchmarks")]
+//     type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
+//     /// Otherwise we only use the default Substrate host functions.
+//     #[cfg(not(feature = "runtime-benchmarks"))]
+//     type ExtendHostFunctions = ();
+//     fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+//     	polkadot::api::dispatch(method, data)
+//     }
+//     fn native_version() -> sc_executor::NativeVersion {
+//       	polkadot::native_version()
+//     }
+// }
 use fc_rpc_core::types::{FeeHistoryCacheLimit,FeeHistoryCache};
 
 
@@ -950,7 +950,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 			block_announce_validator_builder: None,
 			warp_sync_params: Some(WarpSyncParams::WithProvider(warp_sync)),
 		})?;
-
+		let service = sync_service.clone();
 	if config.offchain_worker.enabled {
 		use futures::FutureExt;
 
@@ -1273,7 +1273,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 	);
 }
 
-
+	
 
 	let rpc_handlers = service::spawn_tasks(service::SpawnTasksParams {
 		config,
@@ -1281,7 +1281,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		client: client.clone(),
 		keystore: keystore_container.keystore(),
 		network: network.clone(),
-		sync_service: sync_service.clone(),
+		sync_service: service.clone(),
 		//rpc_builder: Box::new(rpc_extensions_builder),
 		rpc_builder: rpc_extensions_builder,
 
@@ -1371,7 +1371,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 					runtime_client: overseer_client.clone(),
 					parachains_db,
 					network_service: network.clone(),
-					sync_service: sync_service.clone(),
+					sync_service: service.clone(),
 					authority_discovery_service,
 					pov_req_receiver,
 					chunk_req_receiver,
@@ -1456,8 +1456,8 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 			select_chain,
 			block_import,
 			env: proposer,
-			sync_oracle: sync_service.clone(),
-			justification_sync_link: sync_service.clone(),
+			sync_oracle: service.clone(),
+			justification_sync_link: service.clone(),
 			create_inherent_data_providers: move |parent, ()| {
 				let client_clone = client_clone.clone();
 				let overseer_handle = overseer_handle.clone();
@@ -1501,7 +1501,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		let justifications_protocol_name = beefy_on_demand_justifications_handler.protocol_name();
 		let network_params = beefy::BeefyNetworkParams {
 			network: network.clone(),
-			sync: sync_service.clone(),
+			sync: service.clone(),
 			gossip_protocol_name: beefy_gossip_proto_name,
 			justifications_protocol_name,
 			_phantom: core::marker::PhantomData::<Block>,
@@ -1597,7 +1597,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		//	link: link_half,
 		link: grandpa_link,
 			network: network.clone(),
-			sync: sync_service.clone(),
+			sync: service.clone(),
 			voting_rule,
 			prometheus_registry: prometheus_registry.clone(),
 			shared_voter_state,
@@ -1619,7 +1619,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		client,
 		overseer_handle,
 		network,
-		sync_service,
+		sync_service:service,
 		rpc_handlers,
 		backend,
 	})

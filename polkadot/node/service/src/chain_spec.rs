@@ -32,15 +32,13 @@ use pallet_staking::Forcing;
 use polkadot_primitives::{AccountId, AccountPublic, AssignmentId, ValidatorId};
 #[cfg(feature = "polkadot-native")]
 use polkadot_runtime as polkadot;
+// use polkadot_runtime ::EVMChainIdConfig;
 #[cfg(feature = "polkadot-native")]
 use polkadot_runtime_constants::currency::UNITS as DOT;
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
 
-
-use polkadot_runtime::EVMChainIdConfig;
-use polkadot_runtime::EvmConfig;
-use polkadot_runtime::EthereumConfig;
+// use polkadot::EvmConfig;
 use sp_core::{H160, U256};
 use std::str::FromStr;
 use std::collections::BTreeMap;
@@ -1363,11 +1361,11 @@ pub fn polkadot_testnet_genesis(
 			// EVM compatibility
 
 			// EVM compatibility
-		evm_chain_id: EVMChainIdConfig {
+		evm_chain_id: crate::polkadot_runtime::EVMChainIdConfig {
 			chain_id,
 			..Default::default()
 		},
-		evm: EvmConfig {
+		evm: crate::polkadot_runtime::EvmConfig {
 			accounts: {
 				let mut map = BTreeMap::new();
 				map.insert(

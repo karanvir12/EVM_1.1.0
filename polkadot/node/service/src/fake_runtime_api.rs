@@ -36,16 +36,12 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult,
 };
-use crate::polkadot_runtime::UncheckedExtrinsic;
 use sp_core::H160;
 use pallet_evm::Account as EVMAccount;
 use sp_runtime::testing::H256;
 use sp_core::U256;
-use crate::polkadot_runtime::Ethereum;
-use crate::polkadot_runtime::Executive;
 use fc_rpc::EthereumTransaction;
 use sp_version::RuntimeVersion;
-use crate::BlakeTwo256;
 use sp_runtime::Permill;
 use fp_rpc::TransactionStatus;
 use sp_weights::Weight;
@@ -413,7 +409,7 @@ sp_api::impl_runtime_apis! {
 			unimplemented!()
 		}
 
-		fn account_basic(address: H160) -> EVMAccount {
+		fn account_basic(_address: H160) -> EVMAccount {
 			unimplemented!()
 		}
 
@@ -421,7 +417,7 @@ sp_api::impl_runtime_apis! {
 			unimplemented!()
 		}
 
-		fn account_code_at(address: H160) -> Vec<u8> {
+		fn account_code_at(_address: H160) -> Vec<u8> {
 			unimplemented!()
 		}
 
@@ -429,35 +425,35 @@ sp_api::impl_runtime_apis! {
 			unimplemented!()
 		}
 
-		fn storage_at(address: H160, index: U256) -> H256 {
+		fn storage_at(_address: H160,_index: U256) -> H256 {
 			unimplemented!()
 		}
 
 		fn call(
-			from: H160,
-			to: H160,
-			data: Vec<u8>,
-			value: U256,
-			gas_limit: U256,
-			max_fee_per_gas: Option<U256>,
-			max_priority_fee_per_gas: Option<U256>,
-			nonce: Option<U256>,
-			estimate: bool,
-			access_list: Option<Vec<(H160, Vec<H256>)>>,
+			_from: H160,
+			_to: H160,
+			_data: Vec<u8>,
+			_value: U256,
+			_gas_limit: U256,
+			_max_fee_per_gas: Option<U256>,
+			_max_priority_fee_per_gas: Option<U256>,
+			_nonce: Option<U256>,
+			_estimate: bool,
+			_access_list: Option<Vec<(H160, Vec<H256>)>>,
 		) -> Result<pallet_evm::CallInfo, sp_runtime::DispatchError> {
 			unimplemented!()
 		}
 
 		fn create(
-			from: H160,
-			data: Vec<u8>,
-			value: U256,
-			gas_limit: U256,
-			max_fee_per_gas: Option<U256>,
-			max_priority_fee_per_gas: Option<U256>,
-			nonce: Option<U256>,
-			estimate: bool,
-			access_list: Option<Vec<(H160, Vec<H256>)>>,
+			_from: H160,
+			_data: Vec<u8>,
+			_value: U256,
+			_gas_limit: U256,
+			_max_fee_per_gas: Option<U256>,
+			_max_priority_fee_per_gas: Option<U256>,
+			_nonce: Option<U256>,
+			_estimate: bool,
+			_access_list: Option<Vec<(H160, Vec<H256>)>>,
 		) -> Result<pallet_evm::CreateInfo, sp_runtime::DispatchError> {
 			unimplemented!()
 		}

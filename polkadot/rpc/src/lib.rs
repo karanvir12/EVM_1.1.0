@@ -149,6 +149,8 @@ pub struct FullDeps<C, P, SC, B, A: ChainApi> {
 	//pub backend: Arc<B>,
 	//pub backend: Arc<dyn fc_db::BackendReader<Block> + Send + Sync>,
 	pub backend: Arc<dyn fc_api::Backend<Block>>,
+
+	/// Backend used by the node.
 	pub sync: Arc<SyncingService<Block>>,
 
 	/// Graph pool instance.
