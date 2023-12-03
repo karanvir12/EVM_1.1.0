@@ -47,9 +47,9 @@ use fc_rpc::{
 	EthBlockDataCacheTask,
 	OverrideHandle,
 };
-use fp_storage::EthereumStorageSchema;
+// use fp_storage::EthereumStorageSchema;
 
-use fp_rpc::{ ConvertTransaction, ConvertTransactionRuntimeApi, EthereumRuntimeRPCApi };
+// use fp_rpc::{ ConvertTransaction, ConvertTransactionRuntimeApi, EthereumRuntimeRPCApi };
 
 use sp_api::{ BlockT, HeaderT, ProvideRuntimeApi };
 
@@ -182,7 +182,7 @@ pub struct FullDeps<C, P, SC, B, A: ChainApi> {
 }
 
 #[derive(Default)]
-//// The ethereum-compatibility configuration used to run a node.
+/// The ethereum-compatibility configuration used to run a node.
 #[derive(Clone, Debug, clap::Parser)]
 pub struct EthConfiguration {
 	/// Maximum number of logs in a query.
@@ -218,7 +218,7 @@ pub struct EthConfiguration {
 	#[arg(long, value_enum, ignore_case = true, default_value_t = BackendType::default())]
 	pub frontier_backend_type: BackendType,
 
-	// Sets the SQL backend's pool size.
+	/// Sets the SQL backend's pool size.
 	#[arg(long, default_value = "100")]
 	pub frontier_sql_backend_pool_size: u32,
 

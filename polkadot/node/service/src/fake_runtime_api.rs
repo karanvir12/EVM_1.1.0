@@ -502,8 +502,7 @@ sp_api::impl_runtime_apis! {
 	}
 
 //	impl fp_rpc::ConvertTransactionRuntimeApi<Block> for Runtime {
-	impl fp_rpc::ConvertTransactionRuntimeApi<sp_runtime::generic::Block<sp_runtime::generic::Header<u32, BlakeTwo256>, UncheckedExtrinsic>> 
-	for Runtime {
+	impl fp_rpc::ConvertTransactionRuntimeApi<Block>  for Runtime {
 		fn convert_transaction(transaction: EthereumTransaction) -> <Block as BlockT>::Extrinsic {
 			unimplemented!()
 		}

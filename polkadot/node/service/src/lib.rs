@@ -137,7 +137,8 @@ pub use service::{
 	ChainSpec, Configuration, Error as SubstrateServiceError, PruningMode, Role, RuntimeGenesis,
 	TFullBackend, TFullCallExecutor, TFullClient, TaskManager, TransactionPoolOptions,
 };
-
+// use sc_service::{error::Error as ServiceError};
+use sc_client_api::BlockchainEvents;
 use fc_rpc::{EthTask, OverrideHandle};
 use fc_mapping_sync:: SyncStrategy;
 use sc_network_sync::SyncingService;
@@ -211,15 +212,10 @@ where
 		<Self as sp_blockchain::HeaderBackend<Block>>::number(self, hash)
 	}
 }
-pub(crate) fn db_config_dir(config: &Configuration) -> PathBuf {
-	config
-		.base_path
-		.as_ref()
-		.map(|base_path| base_path.config_dir(config.chain_spec.id()))
-		.unwrap_or_else(|| {
-			BasePath::from_project("", "", "Peer").config_dir(config.chain_spec.id())
-		})
-	}
+pub fn db_config_dir(config: &Configuration) -> PathBuf {
+	config.base_path.config_dir(config.chain_spec.id())
+}
+
 /// Decoupling the provider.
 ///
 /// Mandated since `trait HeaderProvider` can only be
@@ -529,28 +525,21 @@ fn new_partial<ChainSelection>(
 		sc_consensus::DefaultImportQueue<Block>,
 		sc_transaction_pool::FullPool<Block, FullClient>,
 		(
-			impl Fn(
-				polkadot_rpc::DenyUnsafe,
-				polkadot_rpc::SubscriptionTaskExecutor,
-			) -> Result<polkadot_rpc::RpcExtension, SubstrateServiceError>,
 			(
-				babe::BabeBlockImport<
-					Block,
-					FullClient,
-					FullBeefyBlockImport<FullGrandpaBlockImport<ChainSelection>>,
-				>,
+				babe::BabeBlockImport<Block,FullClient,	FullBeefyBlockImport<FullGrandpaBlockImport<ChainSelection>>,>,
 				grandpa::LinkHalf<Block, FullClient, ChainSelection>,
 				babe::BabeLink<Block>,
-				beefy::BeefyVoterLinks<Block>,
+				// beefy::BeefyVoterLinks<Block>,
 			),
 			//grandpa::SharedVoterState,
 			sp_consensus_babe::SlotDuration,
 			Option<Telemetry>,
-			Arc<FrontierBackend<Block>>,
+			babe::BabeWorkerHandle<Block>,	
+			FrontierBackend<Block>,
 
 		),
 	>,
-	Error,
+	SubstrateServiceError,
 >
 where
 	ChainSelection: 'static + SelectChain<Block>,
@@ -663,71 +652,6 @@ where
 	));
 
 
-
-
-	//let import_setup = (block_import, grandpa_link, babe_link, beefy_voter_links);
-	// let rpc_setup = shared_voter_state.clone();
-
-	// let rpc_extensions_builder = {
-	// 	let client = client.clone();
-	// 	let keystore = keystore_container.keystore();
-	// 	let transaction_pool = transaction_pool.clone();
-	// 	let select_chain = select_chain.clone();
-	// 	let chain_spec = config.chain_spec.cloned_box();
-	// 	let backend = backend.clone();
-
-	// 	move |deny_unsafe,
-	// 	      subscription_executor: polkadot_rpc::SubscriptionTaskExecutor|
-	// 	      -> Result<polkadot_rpc::RpcExtension, service::Error> {
-	// 		let deps = polkadot_rpc::FullDeps {
-	// 			client: client.clone(),
-	// 			pool: transaction_pool.clone(),
-	// 			select_chain: select_chain.clone(),
-	// 			chain_spec: chain_spec.cloned_box(),
-	// 			deny_unsafe,
-	// 			babe: polkadot_rpc::BabeDeps {
-	// 				babe_worker_handle: babe_worker_handle.clone(),
-	// 				keystore: keystore.clone(),
-	// 			},
-	// 			grandpa: polkadot_rpc::GrandpaDeps {
-	// 				shared_voter_state: shared_voter_state.clone(),
-	// 				shared_authority_set: shared_authority_set.clone(),
-	// 				justification_stream: justification_stream.clone(),
-	// 				subscription_executor: subscription_executor.clone(),
-	// 				finality_provider: finality_proof_provider.clone(),
-	// 			},
-	// 			beefy: polkadot_rpc::BeefyDeps {
-	// 				beefy_finality_proof_stream: beefy_rpc_links.from_voter_justif_stream.clone(),
-	// 				beefy_best_block_stream: beefy_rpc_links.from_voter_best_beefy_stream.clone(),
-	// 				subscription_executor,
-	// 			},
-	// 			backend: backend.clone(),
-	// 		};
-
-	// 		polkadot_rpc::create_full(deps).map_err(Into::into)
-	// 	}
-	// };
-	// let import_queue = babe::import_queue(
-	// 	babe_link.clone(),
-	// 	block_import.clone(),
-	// 	Some(Box::new(justification_import.clone())),
-	// 	client.clone(),
-	// 	select_chain.clone(),
-	// 	move |_, ()| async move {
-	// 		let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
-
-	// 		let slot =
-	// 			sp_consensus_babe::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-	// 				*timestamp,
-	// 				slot_duration,
-	// 			);
-
-	// 		Ok((slot, timestamp))
-	// 	},
-	// 	&task_manager.spawn_essential_handle(),
-	// 	config.prometheus_registry(),
-	// 	telemetry.as_ref().map(|x| x.handle()),
-	// )?;
 	let (import_queue, babe_worker_handle) = babe::import_queue(babe::ImportQueueParams {
 			link: babe_link.clone(),
 			block_import: block_import.clone(),
@@ -759,7 +683,7 @@ where
 		import_queue,
 		transaction_pool,
 	//	other: (rpc_extensions_builder, import_setup, rpc_setup, slot_duration, telemetry),
-	other: (import_setup,slot_duration,telemetry,frontier_backend),
+	other: (import_setup,slot_duration,telemetry,babe_worker_handle,frontier_backend),
 
 	})
 }
@@ -937,10 +861,10 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 		select_chain,
 		import_queue,
 		transaction_pool,
-		other: (rpc_extensions_builder, import_setup,babe_worker_handle, rpc_setup, slot_duration, mut telemetry,frontier_backend),
+		other: ( import_setup, slot_duration, mut telemetry,babe_worker_handle,frontier_backend),
 	} = new_partial::<SelectRelayChain<_>>(&mut config, basics, select_chain)?;
 
-	let shared_voter_state = rpc_setup;
+	let shared_voter_state = grandpa::SharedVoterState::empty();
 	let auth_disc_publish_non_global_ips = config.network.allow_non_globals_in_dht;
 	let mut net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
 
@@ -1148,7 +1072,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 	let client = client.clone();
 	// let pool = transaction_pool.clone();
 	let select_chain = select_chain.clone();
-	let keystore = keystore_container.keystore();
+	let keystore = keystore_container.local_keystore();
 	let _chain_spec = config.chain_spec.cloned_box();
 	let filter_pool: Option<FilterPool> = Some(Arc::new(Mutex::new(BTreeMap::new())));
 	let fee_history_cache: FeeHistoryCache = Arc::new(Mutex::new(BTreeMap::new()));
@@ -1177,7 +1101,7 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 
 	let rpc_extensions_builder = {
 		let client = client.clone();
-		let keystore = keystore_container.sync_keystore();
+		let keystore = keystore_container.keystore();
 		let fee_history_cache_limit = fee_history_cache_limit.clone();
 		let enable_dev_signer = false;
 		let frontier_backend = frontier_backend.clone();
@@ -1225,7 +1149,10 @@ pub fn new_full<OverseerGenerator: OverseerGen>(
 				block_data_cache: block_data_cache.clone(),
 				fee_history_cache:fee_history_cache.clone(),
 				fee_history_cache_limit:fee_history_cache_limit.clone(),
-				backend: frontier_backend.clone(),
+				backend: match frontier_backend.clone() {
+					fc_db::Backend::KeyValue(b) => Arc::new(b),
+					fc_db::Backend::Sql(b) => Arc::new(b),
+				},
 				filter_pool: filter_pool.clone(),
 				network: network.clone(),
 				deny_unsafe,
