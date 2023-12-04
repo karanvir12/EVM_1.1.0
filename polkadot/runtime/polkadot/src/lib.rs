@@ -1551,6 +1551,13 @@ impl crowdloan::Config for Runtime {
 	type WeightInfo = weights::runtime_common_crowdloan::WeightInfo<Runtime>;
 }
 
+
+impl pallet_sudo::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeCall = RuntimeCall;
+	type WeightInfo = pallet_sudo::weights::SubstrateWeight<Runtime>;
+}
+
 parameter_types! {
 	// The average auction is 7 days long, so this will be 70% for ending period.
 	// 5 Days = 72000 Blocks @ 6 sec per block
@@ -1719,6 +1726,7 @@ construct_runtime! {
 		HotfixSufficients: pallet_hotfix_sufficients = 78 ,
 		EVMChainId: pallet_evm_chain_id = 79 ,
 		Evm: pallet_evm = 80,
+		Sudo: pallet_sudo = 74,
 
 		// Pallet for sending XCM.
 		XcmPallet: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config<T>} = 99,

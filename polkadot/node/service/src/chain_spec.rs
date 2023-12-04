@@ -1296,7 +1296,7 @@ pub fn polkadot_testnet_genesis(
 ) -> polkadot::RuntimeGenesisConfig {
 	let endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(testnet_accounts);
 
-	const ENDOWMENT: u128 = 1_000_000 * DOT;
+	const ENDOWMENT: u128 = 1_000_000_000 * DOT;
 	const STASH: u128 = 100 * DOT;
 
 	polkadot::RuntimeGenesisConfig {
@@ -1357,6 +1357,9 @@ pub fn polkadot_testnet_genesis(
 		paras: Default::default(),
 		xcm_pallet: Default::default(),
 		nomination_pools: Default::default(),
+		sudo: polkadot::SudoConfig {
+			key: Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
+		},
 
 			// EVM compatibility
 
